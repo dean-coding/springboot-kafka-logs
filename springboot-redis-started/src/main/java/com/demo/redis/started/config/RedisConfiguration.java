@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.integration.redis.util.RedisLockRegistry;
 
 /**
  * @author fuhw/dean
@@ -13,6 +14,16 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfiguration {
 
+    /**
+      * 配置分布式锁
+      *
+      * @param redisConnectionFactory
+      * @return
+      */
+    @Bean
+    public RedisLockRegistry redisLockRegistry(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisLockRegistry(redisConnectionFactory, "dn-redis-lock", 10000L);
+    }
     @Bean
     public RedisTemplate<String, Object> getRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
