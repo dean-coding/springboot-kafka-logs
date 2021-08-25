@@ -22,6 +22,7 @@
         <module>springboot-actuator</module>
         <module>springboot-mongo</module>
         <module>uaa-security-started</module>
+        <module>jmh-started</module>
     </modules>
 
     <properties>
