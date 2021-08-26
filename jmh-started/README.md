@@ -1,14 +1,15 @@
 
+[toc]
 # JMH(Java Microbenchmark Harness)
 
->`JMH`是`OpenJDK`团队开发的一款基准测试工具，一般用于代码的性能调优，精度甚至可以达到纳秒级别;
-`fastjson`是否正如它自己所说的那样至今性能未遇对手？
-`Fork/Join`框架真的有提高性能吗？
+>`JMH`是`OpenJDK`团队开发的一款基准测试工具，一般用于代码的性能调优，精度甚至可以达到纳秒级别;场景：
+> - `fastjson`是否正如它自己所说的那样至今性能未遇对手？
+> - `Fork/Join`框架真的有提高性能吗？
 
 
 ## Get Started
 
-### Maven Dependency
+### 1 Maven Dependency
 
 ```
 <dependency>
@@ -23,7 +24,7 @@
 </dependency>
 
 ```
-### 入门example:
+### 2 入门example:
 
 ```java
 public class JMHStarted {
@@ -61,26 +62,26 @@ public class JMHStarted {
 ```
 
 
-### 配置详解
+### 3 配置详解
 
 
-- `@Warmup`: 预热运行1次，每次2s
-- `@Threads`: 每次多少线程来执行
-- `@Fork`: 代表启动多个单独的进程分别测试
-- `@Measurement`： 运行2次，每次2s
-- `@BenchmarkMode`: 基准测试的模式
+> - `@Warmup`: 预热运行1次，每次2s
+> - `@Threads`: 每次多少线程来执行
+> - `@Fork`: 代表启动多个单独的进程分别测试
+> - `@Measurement`： 运行2次，每次2s
+> - `@BenchmarkMode`: 基准测试的模式<br>
 1.AverageTime，表示每次执行时间<br>
 2.SampleTime表示采样时间<br>
 3.SingleShotTime表示只运行一次，用于测试冷启动消耗时间<br>
 4.All表示统计前面的所有指标<br>
-- `@State`(value = Scope.Benchmark)：基准测试内共享对象
+> - `@State`(value = Scope.Benchmark)：基准测试内共享对象<br>
 1.Scope.Group)：同一个线程组内共享<br>
 2.Scope.Thread)：同一个线程内共享<br>
-- `@Setup` & `@TearDown`: 初始化和销毁
+> - `@Setup` & `@TearDown`: 初始化和销毁
 
-> PS: 相关注解也可以直接加载类上，或者直接在main方法的Option中配置
+**PS: 相关注解也可以直接加载类上，或者直接在main方法的Option中配置**
 
-```
+```java
 public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 // 导入要测试的类
@@ -107,12 +108,11 @@ public static void main(String[] args) throws RunnerException {
 - https://jmh.morethan.io/
 - http://deepoove.com/jmh-visual-chart/
 
-
-### Options properties
+### 4 Options properties
 
 方法名|参数|对应注解
 ---|---|---
-include|要运行基准测试类的简单名称 eg. StringConnectBenchmark/-
+include|要运行基准测试类的简单名称 eg. StringConnectBenchmark|-
 exclude|不要运行基准测试类的简单名称 eg. StringConnectBenchmark|-
 warmupIterations|预热的迭代次数|@Warmup
 warmupBatchSize|预热批量的大小|@Warmup
@@ -122,15 +122,15 @@ warmupTime|预热的时间|@Warmup
 measurementIterations|测试的迭代次数|@Measurement
 measurementBatchSize|测试批量的大小|@Measurement
 measurementTime|测试的时间|@Measurement
-mode|测试模式： Throughput（吞吐量）<br>， AverageTime（平均时间<br>），SampleTime（在测试中，随机进行采样执行的时间）<br>，SingleShotTime（在每次执行中计算耗时）<br>，All|@BenchmarkMode
+mode|测试模式： <br>Throughput（吞吐量）， <br>AverageTime（平均时间），<br>SampleTime（在测试中，随机进行采样执行的时间），<br>SingleShotTime（在每次执行中计算耗时），<br>All|@BenchmarkMode
 
 
 
-### 示例`com.dean.started.actuator.StringBuilderRunner`执行结果
+### 5 示例`com.dean.started.actuator.StringBuilderRunner`执行结果
 
 Benchmark                                | Mode|  Cnt|  Score |   Error|  Units
 |:---|:---|:---|:---|:---|:---|
-基准测试执行的方法|测试模式，这里是吞吐量|运行多少次|分数|错误|单位
+基准测试方法|测试模式(吞吐量)|运行次数|分数|错误|单位
 StringConnectBenchmark.testStringAdd     | thrpt|    9|  547692723.688 ± 52100477.750|  |ops/s
 StringConnectBenchmark.testStringBuffer  | thrpt|    9|  115049736.783 ±  5756397.679|  |ops/s
 StringConnectBenchmark.testStringBuilder | thrpt|    9|  113579788.402 ± 26933870.488|  |ops/s
@@ -141,13 +141,13 @@ StringConnectBenchmark.testStringFormat  | thrpt|    9|    1062773.654 ±    703
 
 
 
-### 结论
-String直接相加 >StringBuffer >= StringBuilder >  StringConcat >> StringFormat
-可见 StringBuffer 与 StringBuilder 大致性能相同，都比concat高几个数量级。
-但是这里不管哪种都比 StringFormat 高N个数量级。所以String的Format方法一定要慎用、不用、禁用！！！
+### 6 结论
+> `String直接相加 > StringBuffer >= StringBuilder >  StringConcat >> StringFormat`
+可见`StringBuffer`与 `StringBuilder`大致性能相同，都比`StringConcat`高几个数量级。
+但是这里不管哪种都比`StringFormat`高N个数量级。所以String的`Format`方法一定要慎用、不用、禁用！！！
 
 
-### 完整输出日志
+### 7 完整输出日志
 ```
 # JMH version: 1.28
 # VM version: JDK 1.8.0_162, Java HotSpot(TM) 64-Bit Server VM, 25.162-b12
