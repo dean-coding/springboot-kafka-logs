@@ -1,6 +1,52 @@
+# mongo
+
+## 过期索引
+> TTL索引：`Time To Live`的缩写。在指定时间段删除数据。
+
+### 1.固定过期时间
+> 示例`lastModifiedDate`日期类型，作为过期索引字段，`expireAfterSeconds`为过期索引属性，单位为秒。
+```
+db.eventlog.createIndex(
+    { "lastModifiedDate": 1 },
+    { expireAfterSeconds: 3600 }
+)
+```
+### 2.调整过期时间
+> 使用`collMod`调整过期时间。
+```
+db.runCommand({
+    collMod: "eventlog", ---集合名
+    index: { 
+        keyPattern: { lastModifiedDate: 1 }, ---createTime为具有TTL索引的字段名
+        expireAfterSeconds: 7200  ---修改后的过期时间(秒)
+    }
+})
+```
+### 3.动态过期时间
+> 建立索引时设置`expireAfterSeconds`属性为`0`
+```
+db.eventlog.createIndex( { "lastModifiedDate": 1 }, { expireAfterSeconds: 0 } )
+```
+**插入测试数据：指定3天后过期:**
+```
+db.eventlog.insert( {
+   "lastModifiedDate": new Date(ISODate().getTime() + 1000 * 3600 * 24 * 3)
+} )
+```
+### 4.TTL索引注意项
+> - 过期索引不保证过期的数据立马会删除,MongoDB后台线程会每隔60秒扫描一次是否有过期数据
+> - 在副本集的模式中，后台线程只会删除`primary`节点的数据。`secondary`节点会从primary节点复制删除操作。
+> - 过期索引只能使用在单一字段上，不能用在复合索引中。
+> - `_id`字段不能创建过期索引。
+> - 过期索引不能用在`Capped Collections`固定大小的集合中。
+> - 不能使用`createIndex()`来调整过期时间，可以使用`collMod`命令来修改。
+> - 如果某个字段（单字段）已经是非过期索引，则无法在同一字段上创建过期索引。必须首先删除原先的索引，然后使用`expireAfterSeconds`选项重新创建。
+
+PS:**与`Redis`的过期自动删除数据相比，`MongoDB`的自动删除数据不能保证原子性**
 
 
-### springboot-mongo
+
+## 常用操作
 
 ```shell
 // 使用数据库：dn-test
