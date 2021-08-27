@@ -95,3 +95,7 @@ db.getCollection("user").find(
 // 获取索引列表
 db.user.getIndexes()
 ```
+
+## refer to 
+
+- https://docs.mongodb.com/manual/tutorial/expire-data/
