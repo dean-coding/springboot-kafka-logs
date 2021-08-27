@@ -45,6 +45,37 @@ db.eventlog.insert( {
 PS:**与`Redis`的过期自动删除数据相比，`MongoDB`的自动删除数据不能保证原子性**
 
 
+### 5.示例
+
+```
+db.getCollection("dn-index-sample").find({}).limit(10)
+
+// 创建ttl索引定点过期： expireAt
+db.getCollection("dn-index-sample").createIndex({ "expireAt": 1 }, { expireAfterSeconds: 0 } )
+// 创建ttl索引固定时间过期： createAt后300s过期
+db.getCollection("dn-index-sample").createIndex({ "createAt": 1 }, { expireAfterSeconds: 300 } )
+// 更改ttl索引的时间： createAt后600s过期
+db.runCommand({ collMod:"dn-index-sample",index:{keyPattern:{createAt:1},expireAfterSeconds: 600 }})
+// 查询索引
+db.getCollection("dn-index-sample").getIndexes()
+
+// 测试新增数据：
+// #1 createAt 60s后过期，expireAt 180s后过期；预期结果：createAt生效，60s后数据删除
+db.getCollection("dn-index-sample").insert({
+   "createAt": new Date(ISODate().getTime()-1000*540),
+   "expireAt": new Date(ISODate().getTime()+1000*180),
+   "name": "dean-001"
+   }
+)
+// #2 createAt 600s后过期，expireAt 300s后过期；预期结果：expireAt生效，300s后数据删除
+db.getCollection("dn-index-sample").insert({
+   "createAt": new Date(ISODate().getTime()),
+   "expireAt": new Date(ISODate().getTime()+1000*300),
+   "name": "dean-001"
+   }
+)
+```
+
 
 ## 常用操作
 
