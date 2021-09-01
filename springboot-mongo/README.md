@@ -76,6 +76,24 @@ db.getCollection("dn-index-sample").insert({
 )
 ```
 
+## 服务状态
+```
+// 查看MongoDB的连接信息
+db.serverStatus().connections
+// 使用db.currentOP()方法查看进程信息
+db.currentOP()
+// 查看db1数据库执行时间超过3秒的活动进程
+db.currentOP(
+  {
+      "active" : true,
+      "secs_running":{"$gt":3},
+      "ns":/^db1\./
+  }
+)
+// MongoDB杀死正在执行的进程
+db.killOp(opid);
+```
+
 
 ## 常用操作
 
@@ -98,6 +116,9 @@ db.user.insert({"name": "dean04", "age": 15,"createTime": new Date})
 // 查询 name=dean01的数据
 db.user.find({"name": "dean01"})
 db.user.find().limit(10)
+// Dinstinct按指定字段统计,等价于：select count(Distinct age) from user;
+db.getCollection("user").distinct("age").length
+
 // 查询 age > 10的数据（条件查询）
 db.getCollection("user").find(
     { 
